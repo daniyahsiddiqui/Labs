@@ -1,0 +1,75 @@
+// Defining constant global variables
+def S3_BUCKET = "s3://risingminervacodebase-rchaturvedi"
+def S3_BINARY_PATH = "devops/app/"
+def S3_TERRAFORM_PATH = "devops/terraform/"
+
+// Pipeline definition
+pipeline {
+  agent any
+  stages {
+  // build stage
+    stage('build') {
+      steps {
+        sh 'virtualenv .venv' // Creating the python virtual environment
+        // Running python setup tool to create wheel distribution file
+        sh """
+            source .venv/bin/activate
+            pip install -r Labs/usecases/usecase-1/requirements.txt
+            pip install wheel
+            python Labs/usecases/usecase-1/setup.py bdist_wheel
+           """
+      }
+    }
+  // test stage
+    stage('test') {
+      steps {
+        // Running the test suits present in code
+        sh """
+             source .venv/bin/activate
+             python Labs/usecases/usecase-1/my_application/test.py
+           """
+      }
+      // Generating test reports
+      post {
+        always {
+          junit 'test-reports/*.xml'
+        }
+      }
+    }
+    // Stage to upload binary to s3
+    // Deactivating python virtual environment
+    stage('uploadBinaryToS3') {
+      steps {
+        sh """
+              source .venv/bin/activate
+              ls dist/
+              aws s3 cp dist/my_application-*.whl ${S3_BUCKET}/${S3_BINARY_PATH}
+              deactivate
+           """
+      }
+    }
+    //Deploy stage
+    stage('deploy') {
+       // Running terraform scripts and uploading plan file to s3
+      steps {
+        sh """
+              terraform -v
+              cd Labs/usecases/usecase-1/terraform
+			  ls -lrt
+              terraform init
+              terraform plan -out plan.out
+              terraform apply -auto-approve plan.out # Can pass paramters here if needed. Refer here https://stackoverflow.com/questions/63203489/how-can-i-pass-variables-from-jenkins-file-to-terraform
+              terraform plan -destroy -out planfile
+              aws s3 cp plan.out ${S3_BUCKET}/${S3_TERRAFORM_PATH}
+              aws s3 cp planfile ${S3_BUCKET}/${S3_TERRAFORM_PATH}
+           """
+      }
+    }
+  }
+  // Stage to clean up workspace
+  post {
+        always {
+            cleanWs()
+        }
+    }
+}

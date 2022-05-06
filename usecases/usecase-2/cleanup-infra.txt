@@ -1,0 +1,7 @@
+aws iam remove-role-from-instance-profile --instance-profile-name rm_iam_profile --role-name EC2JenkinsRole --profile admin
+aws iam remove-role-from-instance-profile --instance-profile-name rm_iam_profile --role-name RisingMinervaEC2JenkinsRole --profile admin
+aws iam delete-instance-profile --instance-profile-name rm_iam_profile --profile admin
+aws ec2 delete-security-group --group-name sg_flask-usecase2-blue
+aws ec2 delete-security-group --group-name sg_flask-usecase2-green
+aws ec2 delete-security-group --group-name sg_ssh-rm-usecase2-blue	
+aws ec2 delete-security-group --group-name sg_ssh-rm-usecase2-green	
