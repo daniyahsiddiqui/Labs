@@ -1,5 +1,5 @@
 # DevOps
-# USE CASE-1 
+# USE CASE-1 added
 ---------------------------------------
 Step 1. Resource creation
     
