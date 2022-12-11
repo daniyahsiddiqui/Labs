@@ -1,23 +1,14 @@
 // Defining constant global variables
 def S3_BUCKET = "s3://jenkins-webhooks/"
-def S3_BINARY_PATH = "devops/usecase-1/app"
-def S3_TERRAFORM_PATH = "devops/usecase-1/terraform"
-def GIT_REPO = "https://github.com/Labs.git"
+def S3_BINARY_PATH = "devops/app/"
+def S3_TERRAFORM_PATH = "devops/terraform/"
 
 // Pipeline definition
 pipeline {
   agent any
-   parameters {
-      choice(
-        name: 'DESTROY',
-        choices: ['YES', 'NO'],
-        description: 'SELECT to destroy'
-      )
-  }
   stages {
   // build stage
     stage('build') {
-      when { expression {  params.DESTROY == 'NO' }}
       steps {
         sh 'virtualenv .venv' // Creating the python virtual environment
         // Running python setup tool to create wheel distribution file
@@ -31,7 +22,6 @@ pipeline {
     }
   // test stage
     stage('test') {
-      when { expression {  params.DESTROY == 'NO' }}
       steps {
         // Running the test suits present in code
         sh """
@@ -49,7 +39,6 @@ pipeline {
     // Stage to upload binary to s3
     // Deactivating python virtual environment
     stage('uploadBinaryToS3') {
-      when { expression {  params.DESTROY == 'NO' }}
       steps {
         sh """
               source .venv/bin/activate
@@ -59,27 +48,9 @@ pipeline {
            """
       }
     }
-
-    stage('Destroy') {
-      when { expression {  params.DESTROY == 'YES' }}
-      steps {
-        sh """
-              terraform -v
-	      git clone ${GIT_REPO}	      
-              cd Labs/usecases/usecase-1/terraform
-              terraform init
-              aws s3 cp ${S3_BUCKET}/${S3_TERRAFORM_PATH}planfile .
-              terraform apply -auto-approve planfile
-           """
-      }
-    }
-
     //Deploy stage
     stage('deploy') {
        // Running terraform scripts and uploading plan file to s3
-       // Destroying stack : terraform apply -auto-approve -out planfile
-       // view binary files : terraform show -json <FILENAME>
-      when { expression {  params.DESTROY == 'NO' }}
       steps {
         sh """
               terraform -v

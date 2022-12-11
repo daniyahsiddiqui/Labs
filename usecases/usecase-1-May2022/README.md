@@ -1,5 +1,5 @@
 # DevOps
-# USE CASE-1 
+# USE CASE-1 added
 ---------------------------------------
 Step 1. Resource creation
     
@@ -14,14 +14,14 @@ Step 1. Resource creation
  4. Create role for EC2 (Application Role)
     1. IAM role for the EC2 on which application is deployed 'EC2_DefaultRole'
        - Attach these service role required for application to run.
-            1. AmazonS3FullAccess 
-            2. AmazonEc2FullAccess
+            2. AmazonS3FullAccess 
+            5. AmazonEc2FullAccess
 ---------------------------------------
 
 Step 2. Pre-requisites:
      
 1. Configure jenkins and Configure "webhook with Githhub" repository(Discussed in earlier slides).
-2. Check for all the files in github folder - https://github.com/Rising-Minerva/DevOps-FINAL/tree/main/Labs/usecases/usecase-1/
+2. Check for all the files in github folder - https://github.com/Rising-Minerva/DevOps/tree/main/Labs/usecases/usecase-1/
 3. Please make changes in the file as directed in ``step-4``
 
 ---------------------------------------
@@ -43,18 +43,18 @@ Step 4. Changes to Application files
      1. provider.tf 
         - [line#- 2]: - AWS region for create resources.
      2. iac_usecase_1.tf 
-        - [line#- 13]: - Specify the AWS VPC id.
-        - [line#- 18]: - CIDR IP block from where we want to access the application UI.
-        - [line#- 24]: - Public subnet id.
-        - [line#- 36]: - AMI Name for creating ec2 on which application will be deployed. Please choose the latest AMI that will have latest aws tools installed.
+        - [line#- 3]: - Specify the AWS VPC id.
+        - [line#- 8]: - CIDR IP block from where we want to access the application UI.
+        - [line#- 20]: - AMI Name for creating ec2 on which application will be deployed. Please choose the latest AMI that will have latest aws tools installed.
                          AMI should be available in the region provided in 'provider.tf'
-        - [line#- 42]: - IAM application role which must be attached to the Ec2 on which application is deployed. Created in "Step 1. Resource creation".
-        - [line#- 52]: - S3 path to download binary package.
+        - [line#- 26]: - IAM application role which must be attached to the Ec2 on which application is deployed. Created in prerequisite step.
+        - [line#- 14]: - Public subnet id.
+        - [line#- 37]: - S3 path to download binary package.
      3. Jenkinsfile 
-        - [line#- 2]: - S3 Bucket (S3_BUCKET).
-        - [line#- 3]: - S3 path to upload the binary package (S3_BINARY_PATH). 
-          - **SHOULD BE EXACTLY SAME AS LINE 52 OF iac_usecase_1.tf**
-        - [line#- 4]: - S3 path for Terraform create destroy plan (S3_TERRAFORM_PATH).
+        - [line#- 2]: - S3 Bucket
+        - [line#- 3]: - S3 path to upload the binary package. 
+          - **SHOULD BE EXACTLY SAME AS LINE 37 OF iac_usecase_1.tf**
+        - [line#- 4]: - S3 path for Terraform create destroy plan.
 ---------------------------------------
 
 Step 5. Step By Step Execution

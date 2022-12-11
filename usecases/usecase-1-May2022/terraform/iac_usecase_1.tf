@@ -1,13 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.5.0"
-    }
-  }
-  required_version = ">= 0.14.9"
-}
-
 variable "VPC" {
   type = string
   default = "vpc-07f7183299bc753ba"
@@ -33,12 +23,12 @@ variable "KEYNAME" {
 
 variable "AMI" {
   type = string
-  default = "ami-0b0dcb5067f052a63" 
+  default = "ami-0022f774911c1d690"
   description = "AMI image id for EC2 instance to bake the EC2"
 }
 
 resource "aws_iam_instance_profile" "rm_iam_profile" {
-  name = "rm_iam_profile_usecase_123"
+  name = "rm_iam_profile"
   role = "EC2_DefaultRole"
 }
 
@@ -49,7 +39,7 @@ variable "EC2_TYPE" {
 
 variable "S3_PATH" {
   type = string
-  default = "s3://jenkins-webhook/devops/usecase-1"
+  default = "s3://jenkins-webhooks/devops/app"
   description = "S3 Path of an deployed image"
 }
 
@@ -89,7 +79,7 @@ resource "aws_security_group" "basic_http" {
 }
 
 resource "aws_security_group" "basic_ssh" {
-  name = "sg_ssh-rm-usecase-1"
+  name = "sg_ssh-rm"
   description = "Web Security Group for HTTP"
   vpc_id =  var.VPC
   ingress = [
@@ -142,10 +132,10 @@ resource "aws_instance" "app_server" {
                   echo "Starting user_data"
                   sudo su -
                   sudo yum -y install pip
-                  mkdir myproject
                   aws s3 cp "${var.S3_PATH}" . --recursive
-                  ls -lrt
-                  cd usecase-1
+				  ls -lrt
+                  mkdir myproject
+                  pip install *.whl
                   pip install *.whl -t /root/myproject
                   echo "export FLASK_APP=/root/myproject/Labs/usecases/usecase-1/my_application/application.py"  >> /etc/profile
                   source /etc/profile
