@@ -147,6 +147,7 @@ resource "aws_instance" "app_server" {
                   aws s3 cp "${var.S3_PATH}" . --recursive
                   ls -lrt
                   cd app/
+                  pip install flask
                   pip install *.whl -t /root/myproject
                   echo "export FLASK_APP=/root/myproject/usecases/usecase-1/my_application/application.py"  >> /etc/profile
                   source /etc/profile
