@@ -23,7 +23,7 @@ pipeline {
         // Running python setup tool to create wheel distribution file
         sh """
             source .venv/bin/activate
-            pip install -r Labs/usecases/usecase-1/requirements.txt
+            pip install -r usecases/usecase-1/requirements.txt
             pip install wheel
             python usecases/usecase-1/setup.py bdist_wheel
            """
