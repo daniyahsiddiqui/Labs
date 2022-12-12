@@ -65,7 +65,7 @@ Step 5. Step By Step Execution
     ![alt text](../../../images/GithubWebHook2.png)
     Payload URL is the jenkins URL.
     
- 3. Create the jenins pipeline.
+ 3. Create the jenkins pipeline.
        - Select **New Item** from jenkins dashboard ![alt text](../../../images/JenkinsNewItem.png)
        - Select **pipeline** project with any name ![alt text](../../../images/NewJenkinsPipeline.png)
        - Click **Discard old builds ** 
