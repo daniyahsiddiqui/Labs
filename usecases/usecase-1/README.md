@@ -115,4 +115,5 @@ Step 6. Notes/Additional instructions:
              ![alt text](../../../images/FinalPipeline.png)
  7. Logs on EC2 available in belo log file
      more /var/log/jenkins/jenkins.log
-    
+   
+ 
