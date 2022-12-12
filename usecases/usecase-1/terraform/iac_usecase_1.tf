@@ -37,8 +37,8 @@ variable "AMI" {
   description = "AMI image id for EC2 instance to bake the EC2"
 }
 
-data "aws_iam_instance_profile" "rm_iam_profile" {
-  name = "rm_iam_profile_usecase_123"
+resource "aws_iam_instance_profile" "rm_iam_profile" {
+  name = "rm_iam_profile_usecase_1234"
   role = "EC2_DefaultRole"
 }
 
