@@ -38,7 +38,7 @@ variable "AMI" {
 }
 
 resource "aws_iam_instance_profile" "rm_iam_profile" {
-  name = "rm_iam_profile_usecase_3"
+  name = "rm_iam_profile_usecase_4"
   role = "EC2_DefaultRole"
 }
 
