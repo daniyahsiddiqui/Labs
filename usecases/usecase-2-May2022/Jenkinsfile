@@ -1,7 +1,7 @@
 // Defining constant global variables
-def S3_BUCKET = "s3://risingminervacodebase-daniyahsiddiqui"
-def S3_BINARY_PATH = "devops/app/usecase2"
-def S3_TERRAFORM_PATH = "devops/terraform/usecase2"
+def S3_BUCKET = "s3://risingminervacodebase-rchaturvedi"
+def S3_BINARY_PATH = "devops/app"
+def S3_TERRAFORM_PATH = "devops/terraform"
 
 // Pipeline definition
 pipeline {
@@ -28,7 +28,7 @@ pipeline {
             source .venv/bin/activate
             pip install -r Labs/usecases/usecase-2/requirements.txt
             pip install wheel
-            python usecases/usecase-2/setup.py bdist_wheel
+            python Labs/usecases/usecase-2/setup.py bdist_wheel
            """
       }
     }
@@ -38,7 +38,7 @@ pipeline {
         // Running the test suits present in code
         sh """
              source .venv/bin/activate
-             python usecases/usecase-2/my_application/test.py
+             python Labs/usecases/usecase-2/my_application/test.py
            """
       }
       // Generating test reports
@@ -67,7 +67,7 @@ pipeline {
       steps {
         sh """
               terraform -v
-              cd usecases/usecase-2/terraform/blue/
+              cd Labs/usecases/usecase-2/terraform/blue/
               terraform init
               terraform plan -out plan.out -var="RELEASE_VERSION=${params.VERSION}"
               terraform apply -auto-approve plan.out
@@ -84,7 +84,7 @@ pipeline {
       steps {
         sh """
               terraform -v
-              cd usecases/usecase-2/terraform/green/
+              cd Labs/usecases/usecase-2/terraform/green/
               terraform init
               terraform plan -out plan.out -var="RELEASE_VERSION=${params.VERSION}"
               terraform apply -auto-approve plan.out

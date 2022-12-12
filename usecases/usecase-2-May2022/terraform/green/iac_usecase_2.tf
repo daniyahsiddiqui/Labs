@@ -4,7 +4,7 @@ provider "aws" {
 
 variable "VPC" {
   type = string
-  default = "vpc-07f7183299bc753ba"
+  default = "vpc-ef705e95"
   description = "VPC in which we need to create resources"
 }
 
@@ -16,25 +16,25 @@ variable "CIDR" {
 
 variable "SUBNET" {
   type = string
-  default = "subnet-06e17f4d97f0e34f3"
+  default = "subnet-8c41e3c1"
   description = "Public subnet for deploying the application"
 }
 
 variable "KEYNAME" {
   type = string
-  default = "myPrivateKey"
+  default = "RisingMinerva-EAST-KeyPair"
   description = "Key name for the EC2"
 }
 
 variable "AMI" {
   type = string
-  default = "ami-0b0dcb5067f052a63" 
+  default = "ami-00dc79254d0461090"
   description = "AMI image id for EC2 instance to bake the EC2"
 }
 
 resource "aws_iam_instance_profile" "rm_iam_profile" {
-  name = "rm_iam_profile_blue"
-  role = "EC2_DefaultRole"
+  name = "rm_iam_profile"
+  role = "EC2JenkinsRole"
 }
 
 variable "EC2_TYPE" {
@@ -44,18 +44,18 @@ variable "EC2_TYPE" {
 
 variable "S3_PATH" {
   type = string
-  default = "s3://risingminervacodebase-daniyahsiddiqui/devops/app/usecase2/blue"
-  description = "S3 Path of an deployed image"
+  default = "s3://risingminervacodebase-rchaturvedi/devops/app"
+  description = "Version to be released"
 }
 
 variable "RELEASE_VERSION" {
   type = string
   default = "1.0.0"
-  description = "Version to be released"
+  description = "S3 Path of an deployed image"
 }
 
 resource "aws_security_group" "basic_http" {
-  name = "sg_flask-usecase2-blue"
+  name = "sg_flask-usecase2-green"
   description = "Web Security Group for HTTP"
   vpc_id =  var.VPC
   ingress = [
@@ -94,8 +94,8 @@ resource "aws_security_group" "basic_http" {
 }
 
 resource "aws_security_group" "basic_ssh" {
-  name = "sg_ssh-rm-usecase2-blue"
-  description = "Web Security Group for SSH"
+  name = "sg_ssh-rm-usecase2-green"
+  description = "SSH Security Group"
   vpc_id =  var.VPC
   ingress = [
     {
@@ -132,7 +132,7 @@ resource "aws_security_group" "basic_ssh" {
   }
 }
 
-resource "aws_instance" "app_server_usecase2_blue" {
+resource "aws_instance" "app_server_usecase2_green" {
   ami = var.AMI
   key_name  = var.KEYNAME
   instance_type = var.EC2_TYPE
@@ -158,6 +158,6 @@ resource "aws_instance" "app_server_usecase2_blue" {
                   echo "End user_data"
                 EOF
   tags = {
-    Name = "rm-application-cluster-blue"
+    Name = "rm-application-cluster-green"
   }
 }
