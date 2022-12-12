@@ -2,7 +2,7 @@
 def S3_BUCKET = "s3://jenkins-webhooks/"
 def S3_BINARY_PATH = "devops/usecase-1/app"
 def S3_TERRAFORM_PATH = "devops/usecase-1/terraform"
-def GIT_REPO = "https://github.com/Labs.git"
+def GIT_REPO = "https://github.com/daniyahsiddiqui/Labs.git"
 
 // Pipeline definition
 pipeline {
