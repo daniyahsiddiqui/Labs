@@ -66,7 +66,7 @@ pipeline {
         sh """
               terraform -v
 	      git clone ${GIT_REPO}	      
-              cd Labs/usecases/usecase-1/terraform
+              cd usecases/usecase-1/terraform
               terraform init
               aws s3 cp ${S3_BUCKET}/${S3_TERRAFORM_PATH}planfile .
               terraform apply -auto-approve planfile
@@ -83,7 +83,7 @@ pipeline {
       steps {
         sh """
               terraform -v
-              cd Labs/usecases/usecase-1/terraform
+              cd usecases/usecase-1/terraform
 			  ls -lrt
               terraform init
               terraform plan -out plan.out
