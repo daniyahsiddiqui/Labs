@@ -49,7 +49,7 @@ variable "EC2_TYPE" {
 
 variable "S3_PATH" {
   type = string
-  default = "s3://jenkins-webhook/devops/usecase-1"
+  default = "s3://jenkins-webhooks/devops/usecase-1"
   description = "S3 Path of an deployed image"
 }
 
