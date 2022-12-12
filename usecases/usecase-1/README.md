@@ -23,7 +23,7 @@ Step 2. Pre-requisites:
 1. Configure jenkins and Configure "webhook with Githhub" repository(Discussed in earlier slides).
 2. Check for all the files in github folder - https://github.com/Rising-Minerva/DevOps-FINAL/tree/main/Labs/usecases/usecase-1/
 3. Please make changes in the file as directed in ``step-4``
-
+4. Make sure you clone a the Rising-Minerva repo into your own github account.
 ---------------------------------------
 
 Step 3. Review code
