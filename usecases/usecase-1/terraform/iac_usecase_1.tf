@@ -38,7 +38,7 @@ variable "AMI" {
 }
 
 resource "aws_iam_instance_profile" "rm_iam_profile" {
-  name = "rm_iam_profile_usecase_2"
+  name = "rm_iam_profile_usecase_3"
   role = "EC2_DefaultRole"
 }
 
@@ -142,12 +142,13 @@ resource "aws_instance" "app_server" {
                   echo "Starting user_data"
                   sudo su -
                   sudo yum -y install pip
-                  mkdir myproject
+                  mkdir /root/myproject
+                  cd /root/myproject/
                   aws s3 cp "${var.S3_PATH}" . --recursive
                   ls -lrt
-                  cd usecase-1
+                  cd app/
                   pip install *.whl -t /root/myproject
-                  echo "export FLASK_APP=/root/myproject/Labs/usecases/usecase-1/my_application/application.py"  >> /etc/profile
+                  echo "export FLASK_APP=/root/myproject/usecases/usecase-1/my_application/application.py"  >> /etc/profile
                   source /etc/profile
                   nohup flask run --host=0.0.0.0 --port 80 > log.txt 2>&1 &
                   echo "Application started"
