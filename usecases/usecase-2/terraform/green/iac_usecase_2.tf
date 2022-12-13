@@ -146,13 +146,14 @@ resource "aws_instance" "app_server_usecase2_green" {
                   #!/bin/bash
                   echo "Starting user_data"
                   sudo su -
-                  sudo yum -y install pip
+                  yum -y install pip
+                  export install_folder="/root/myproject/${var.RELEASE_VERSION}/"
+                  mkdir -p ${install_folder}
+                  cd ${install_folder}
                   aws s3 cp "${var.S3_PATH}/${var.RELEASE_VERSION}/" . --recursive
-                  mkdir /root/myproject/${var.RELEASE_VERSION}
-                  cd /root/myproject/${var.RELEASE_VERSION}
                   pip install flask
-                  pip install *.whl -t /root/myproject/${var.RELEASE_VERSION}
-                  echo "export FLASK_APP=/root/myproject/${var.RELEASE_VERSION}/usecases/usecase-2/my_application/application.py"  >> /etc/profile
+                  pip install *.whl -t ${install_folder}
+                  echo "export FLASK_APP=${install_folder}/usecases/usecase-2/my_application/application.py"  >> /etc/profile
                   source /etc/profile
                   nohup flask run --host=0.0.0.0 --port 80 > log.txt 2>&1 &
                   echo "Application started"
