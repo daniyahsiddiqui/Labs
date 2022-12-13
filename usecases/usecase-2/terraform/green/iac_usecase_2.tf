@@ -50,7 +50,7 @@ variable "S3_PATH" {
 
 variable "RELEASE_VERSION" {
   type = string
-  default = "1.0.0"
+  default = "1.0.1"
   description = "Version to be released"
 }
 
