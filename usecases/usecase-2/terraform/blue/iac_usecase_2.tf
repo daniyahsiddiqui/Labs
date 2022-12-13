@@ -44,7 +44,7 @@ variable "EC2_TYPE" {
 
 variable "S3_PATH" {
   type = string
-  default = "s3://risingminervacodebase-daniyahsiddiqui/devops/app/usecase2/blue"
+  default = "s3://risingminervacodebase-daniyahsiddiqui/devops/app/usecase2"
   description = "S3 Path of an deployed image"
 }
 
@@ -147,11 +147,13 @@ resource "aws_instance" "app_server_usecase2_blue" {
                   echo "Starting user_data"
                   sudo su -
                   sudo yum -y install pip
+                  mkdir /root/myproject
+                  cd /root/myproject
                   aws s3 cp "${var.S3_PATH}/${var.RELEASE_VERSION}/" . --recursive
-                  mkdir myproject
-                  pip install *.whl
+                  cd app/
+                  pip install flask
                   pip install *.whl -t /root/myproject
-                  echo "export FLASK_APP=/root/myproject/Labs/usecases/usecase-2/my_application/application.py"  >> /etc/profile
+                  echo "export FLASK_APP=/root/myproject/usecases/usecase-2/my_application/application.py"  >> /etc/profile
                   source /etc/profile
                   nohup flask run --host=0.0.0.0 --port 80 > log.txt 2>&1 &
                   echo "Application started"
