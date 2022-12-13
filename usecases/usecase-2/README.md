@@ -15,8 +15,8 @@ Step 1. Resource creation
     1. IAM role for the EC2 on which application is deployed 'EC2_DefaultRole'
         
        - Attach these service role required for application to run.
-            2. AmazonS3FullAccess 
-            5. AmazonEc2FullAccess   
+            1. AmazonS3FullAccess 
+            2. AmazonEc2FullAccess   
  5. We will be using the same application code as used in usecase-1
 
 ---------------------------------------
@@ -26,6 +26,7 @@ Step 2. Pre-requisites:
 1. Configure jenkins and Configure "webhook with Githhub" repository(Discussed in earlier slides).
 2. Check for all the files in github folder - https://github.com/Rising-Minerva/DevOps/tree/main/Labs/usecases/usecase-2/
 3. Please make changes in the file as directed in ``step-4``
+4. Make sure you create the folder with same structure in your own Gitbub.
 
 ---------------------------------------
 

@@ -157,8 +157,8 @@ resource "aws_instance" "app_server_usecase2_green" {
                   cd "${var.INSTALL_FOLDER}/${var.RELEASE_VERSION}"
                   aws s3 cp "${var.S3_PATH}/${var.RELEASE_VERSION}/" . --recursive
                   pip install flask
-                  pip install *.whl -t ${var.INSTALL_FOLDER}
-                  echo "export FLASK_APP=${var.INSTALL_FOLDER}/usecases/usecase-2/my_application/application.py"  >> /etc/profile
+                  pip install *.whl -t ${var.INSTALL_FOLDER}/${var.RELEASE_VERSION}
+                  echo "export FLASK_APP=${var.INSTALL_FOLDER}/${var.RELEASE_VERSION}/usecases/usecase-2/my_application/application.py"  >> /etc/profile
                   source /etc/profile
                   nohup flask run --host=0.0.0.0 --port 80 > log.txt 2>&1 &
                   echo "Application started"
