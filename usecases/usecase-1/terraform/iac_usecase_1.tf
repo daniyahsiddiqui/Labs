@@ -56,12 +56,12 @@ resource "aws_iam_role" "EC2_DefaultRole" {
 
 resource "aws_iam_policy_attachment" "EC2_Policies" {
   name = "EC2_Policies"
-  count = 2
-  policy_arn = [
+  for_each toset([
       "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
       "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-  ] 
+  ])
   role = aws_iam_role.EC2_DefaultRole.name
+  policy_arn = each.value
 }
 
 resource "aws_iam_instance_profile" "rm_iam_profile" {
