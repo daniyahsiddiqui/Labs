@@ -37,7 +37,7 @@ variable "AMI" {
   description = "AMI image id for EC2 instance to bake the EC2"
 }
 
-resource "aws_iam_role" "role" {
+resource "aws_iam_role" "EC2_DefaultRole" {
   name = "EC2_DefaultRole"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -45,6 +45,7 @@ resource "aws_iam_role" "role" {
       {
         Action = "sts:AssumeRole",
         Effect = "Allow",
+        Sid = ""
         Principal = {
           Service = "ec2.amazonaws.com"
         }
@@ -53,18 +54,19 @@ resource "aws_iam_role" "role" {
   })
 }
 
-resource "aws_iam_policy_attachment" "policies" {
+resource "aws_iam_policy_attachment" "EC2_Policies" {
+  name = "EC2_Policies"
   count = 2
   policy_arn = [
       "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
       "arn:aws:iam::aws:policy/AmazonS3FullAccess",
   ] 
-  role = aws_iam_role.role.name
+  role = aws_iam_role.EC2_DefaultRole.name
 }
 
 resource "aws_iam_instance_profile" "rm_iam_profile" {
-  name = "rm_iam_profile_usecase_4"
-  role = "EC2_DefaultRole"
+  name = "rm_iam_profile_usecase1"
+  role = aws_iam_role.EC2_DefaultRole.name
 }
 
 variable "EC2_TYPE" {
