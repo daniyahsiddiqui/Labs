@@ -1,8 +1,8 @@
 // Defining constant global variables
-def S3_BUCKET = "s3://dan-usecase1-binaries"
-def S3_BINARY_PATH = "devops/app/usecase1/"
-def S3_TERRAFORM_PATH = "devops/terraform/usecase1/"
-def GIT_REPO = "https://github.com/Rising-Minerva/DevOps-FINAL.git"
+def S3_BUCKET = "s3://jenkins-webhooks"
+def S3_BINARY_PATH = "devops/usecase-1/app/"
+def S3_TERRAFORM_PATH = "devops/usecase-1/terraform/"
+def GIT_REPO = "https://github.com/daniyahsiddiqui/Labs.git"
 
 // Pipeline definition
 pipeline {
@@ -10,7 +10,7 @@ pipeline {
    parameters {
       choice(
         name: 'DESTROY',
-        choices: ['NO', 'YES'],
+        choices: ['YES', 'NO'],
         description: 'SELECT to destroy'
       )
   }
@@ -23,9 +23,9 @@ pipeline {
         // Running python setup tool to create wheel distribution file
         sh """
             source .venv/bin/activate
-            pip install -r Labs/usecases/usecase-1/requirements.txt
+            pip install -r usecases/usecase-1/requirements.txt
             pip install wheel
-            python Labs/usecases/usecase-1/setup.py bdist_wheel
+            python usecases/usecase-1/setup.py bdist_wheel
            """
       }
     }
@@ -36,7 +36,7 @@ pipeline {
         // Running the test suits present in code
         sh """
              source .venv/bin/activate
-             python Labs/usecases/usecase-1/my_application/test.py
+             python usecases/usecase-1/my_application/test.py
            """
       }
       // Generating test reports
@@ -66,7 +66,7 @@ pipeline {
         sh """
               terraform -v
 	      git clone ${GIT_REPO}	      
-              cd DevOps-FINAL/Labs/usecases/usecase-1/terraform
+              cd usecases/usecase-1/terraform
               terraform init
               aws s3 cp ${S3_BUCKET}/${S3_TERRAFORM_PATH}planfile .
               terraform apply -auto-approve planfile
@@ -83,8 +83,8 @@ pipeline {
       steps {
         sh """
               terraform -v
-              cd Labs/usecases/usecase-1/terraform
-	      ls -lrt
+              cd usecases/usecase-1/terraform
+			  ls -lrt
               terraform init
               terraform plan -out plan.out
               terraform apply -auto-approve plan.out # Can pass paramters here if needed. Refer here https://stackoverflow.com/questions/63203489/how-can-i-pass-variables-from-jenkins-file-to-terraform

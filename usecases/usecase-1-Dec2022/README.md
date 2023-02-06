@@ -8,10 +8,8 @@ Step 1. Resource creation
  2. **VPC** and **Subnet** - In which you want to create infrastructure to deploy the code.
     1. For simplicity and easy access of UI's please select **public subnet**. 
     2. VPC and Subnet must be configured, before running Jenkins pipeline, Create it if not already present.
-
  3. S3 bucket as binary repository
     1. S3 bucket must be created before running Jenkins pipeline.
-    	- Check Jenkinsfile in usecase-1 and make sure you have created the folders defined in it [Line# 1-5].
  
  4. Create role for EC2 (Application Role)
     1. IAM role for the EC2 on which application is deployed 'EC2_DefaultRole'
@@ -25,7 +23,8 @@ Step 2. Pre-requisites:
 1. Configure jenkins and Configure "webhook with Githhub" repository(Discussed in earlier slides).
 2. Check for all the files in github folder - https://github.com/Rising-Minerva/DevOps-FINAL/tree/main/Labs/usecases/usecase-1/
 3. Please make changes in the file as directed in ``step-4``
-4. Make sure you clone the RM repo into your own Github account with exact folder structure from Labs/usecases/...
+4. Make sure you clone a the Rising-Minerva repo into your own github account.
+
 ---------------------------------------
 
 Step 3. Review code
@@ -35,22 +34,24 @@ Step 3. Review code
  4. requirements.txt - Package dependency required for the application to run.
  5. setup.py - Build setup file for creating python wheel package for distribution. For details description -https://flask.palletsprojects.com/en/2.0.x/patterns/distribute/#installing-developing
  6. terraform/iac_usecase_1.tf - Terraform file for creating application infrastructure.
+ 7. provider.tf - Terraform cloud provider file to specify the AWS region. 
 
 ---------------------------------------
 
 Step 4. Changes to Application files
 
 1. Changes in the code files
-     1. iac_usecase_1.tf 
-        - [line#- 12]: - AWS region for create resources.
-        - [line#- 17]: - Specify the AWS VPC id.
-        - [line#- 22]: - CIDR IP block from where we want to access the application UI.
-        - [line#- 28]: - Public subnet id.
-        - [line#- 40]: - AMI Name for creating ec2 on which application will be deployed. Please choose the latest AMI that will have latest aws tools installed.
+     1. provider.tf 
+        - [line#- 2]: - AWS region for create resources.
+     2. iac_usecase_1.tf 
+        - [line#- 13]: - Specify the AWS VPC id.
+        - [line#- 18]: - CIDR IP block from where we want to access the application UI.
+        - [line#- 24]: - Public subnet id.
+        - [line#- 36]: - AMI Name for creating ec2 on which application will be deployed. Please choose the latest AMI that will have latest aws tools installed.
                          AMI should be available in the region provided in 'provider.tf'
-        - [line#- 46]: - IAM application role which must be attached to the Ec2 on which application is deployed. Created in "Step 1. Resource creation".
-        - [line#- 56]: - S3 path to download binary package.
-     3. Jenkinsfile - All S3 paths should be Unique globally, so use your name, or some other string to make it unique. 
+        - [line#- 42]: - IAM application role which must be attached to the Ec2 on which application is deployed. Created in "Step 1. Resource creation".
+        - [line#- 52]: - S3 path to download binary package.
+     3. Jenkinsfile 
         - [line#- 2]: - S3 Bucket (S3_BUCKET).
         - [line#- 3]: - S3 path to upload the binary package (S3_BINARY_PATH). 
           - **SHOULD BE EXACTLY SAME AS LINE 52 OF iac_usecase_1.tf**
@@ -114,4 +115,5 @@ Step 6. Notes/Additional instructions:
              ![alt text](../../../images/FinalPipeline.png)
  7. Logs on EC2 available in belo log file
      more /var/log/jenkins/jenkins.log
-    
+   
+ 

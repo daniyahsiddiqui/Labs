@@ -8,13 +8,9 @@ terraform {
   required_version = ">= 0.14.9"
 }
 
-provider "aws" {
-  region = "us-east-1"
-}
-
 variable "VPC" {
   type = string
-  default = "vpc-ef705e95"
+  default = "vpc-07f7183299bc753ba"
   description = "VPC in which we need to create resources"
 }
 variable "CIDR" {
@@ -25,24 +21,24 @@ variable "CIDR" {
 
 variable "SUBNET" {
   type = string
-  default = "subnet-8c41e3c1"
+  default = "subnet-06e17f4d97f0e34f3"
   description = "Public subnet for deploying the application"
 }
 
 variable "KEYNAME" {
   type = string
-  default = "RisingMinerva-EAST-KeyPair"
+  default = "myPrivateKey"
   description = "Key name for the EC2"
 }
 
 variable "AMI" {
   type = string
-  default = "ami-00dc79254d0461090"
+  default = "ami-0b0dcb5067f052a63" 
   description = "AMI image id for EC2 instance to bake the EC2"
 }
 
 resource "aws_iam_instance_profile" "rm_iam_profile" {
-  name = "rm_iam_profile_usecase_123"
+  name = "rm_iam_profile_usecase_4"
   role = "EC2_DefaultRole"
 }
 
@@ -53,12 +49,12 @@ variable "EC2_TYPE" {
 
 variable "S3_PATH" {
   type = string
-  default = "s3://rm-binaries/devops/app"
+  default = "s3://jenkins-webhooks/devops/usecase-1"
   description = "S3 Path of an deployed image"
 }
 
 resource "aws_security_group" "basic_http" {
-  name = "sg_flask-rm-usecase-1"
+  name = "sg_flask-rm"
   description = "Web Security Group for HTTP"
   vpc_id =  var.VPC
   ingress = [
@@ -150,10 +146,10 @@ resource "aws_instance" "app_server" {
                   cd /root/myproject/
                   aws s3 cp "${var.S3_PATH}" . --recursive
                   ls -lrt
-                  cd usecase1
+                  cd app/
                   pip install flask
                   pip install *.whl -t /root/myproject
-                  echo "export FLASK_APP=/root/myproject/Labs/usecases/usecase-1/my_application/application.py"  >> /etc/profile
+                  echo "export FLASK_APP=/root/myproject/usecases/usecase-1/my_application/application.py"  >> /etc/profile
                   source /etc/profile
                   nohup flask run --host=0.0.0.0 --port 80 > log.txt 2>&1 &
                   echo "Application started"

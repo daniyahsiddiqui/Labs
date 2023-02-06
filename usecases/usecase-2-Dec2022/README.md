@@ -173,8 +173,4 @@ Step 6. Notes/Additional instructions:
                 
         aws s3 cp ${S3_BUCKET}/${S3_TERRAFORM_PATH}/green/<version>/planfile .
         terraform apply -auto-approve planfile      
-8. In branches to build section of pipeline, if it fails, try
-       - `*/tags/${VERSION}` instead of `refs/tags/${VERSION}`       
-9. If you need to delete iam_profile you can use these aws cli commands
-       - `aws iam remove-role-from-instance-profile --instance-profile-name rm_iam_profile_blue --role-name EC3_DefaultRole`
-       - `aws iam delete-instance-profile --instance-profile-name rm_iam_profile_blue`
+        
