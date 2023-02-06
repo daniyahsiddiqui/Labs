@@ -80,7 +80,7 @@ variable "EC2_TYPE" {
 
 variable "S3_PATH" {
   type = string
-  default = " s3://dan-usecase1-binaries/devops/usecase-1"
+  default = " s3://dan-usecase1-binaries/devops/usecase-1/"
   description = "S3 Path of an deployed image"
 }
 
