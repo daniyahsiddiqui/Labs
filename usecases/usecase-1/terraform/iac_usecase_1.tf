@@ -8,6 +8,10 @@ terraform {
   required_version = ">= 0.14.9"
 }
 
+provider "aws" {
+  region = "us-east-1"
+}
+
 variable "VPC" {
   type = string
   default = "vpc-07f7183299bc753ba"
@@ -76,7 +80,7 @@ variable "EC2_TYPE" {
 
 variable "S3_PATH" {
   type = string
-  default = "s3://jenkins-webhooks/devops/usecase-1"
+  default = " s3://dan-usecase1-binaries/devops/usecase-1"
   description = "S3 Path of an deployed image"
 }
 

@@ -59,7 +59,7 @@ Step 4. Changes to Application files
 
 Step 5. Step By Step Execution
     
- 1. Setup and configure jenkins (details present in earlier slides).
+ 1. Make sure your Jenkins server is up and running (details present in earlier slides).
  2. Create a githb webhook(details present in earlier slides).
     ![alt text](../../../images/GithubWebHook.png)
     ![alt text](../../../images/GithubWebHook2.png)
