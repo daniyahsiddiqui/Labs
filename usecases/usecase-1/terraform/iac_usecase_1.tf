@@ -41,36 +41,37 @@ variable "AMI" {
   description = "AMI image id for EC2 instance to bake the EC2"
 }
 
-resource "aws_iam_role" "EC2_DefaultRole" {
-  name = "EC2_DefaultRole"
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = "sts:AssumeRole",
-        Effect = "Allow",
-        Sid = ""
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
+# resource "aws_iam_role" "EC2_DefaultRole" {
+#   name = "EC2_DefaultRole"
+#   assume_role_policy = jsonencode({
+#    Version = "2012-10-17",
+#     Statement = [
+#       {
+#         Action = "sts:AssumeRole",
+#         Effect = "Allow",
+#         Sid = ""
+#         Principal = {
+#           Service = "ec2.amazonaws.com"
+#         }
+#       }
+#     ]
+#   })
+# }
 
-resource "aws_iam_policy_attachment" "EC2_Policies" {
-  name = "EC2_Policies"
-  for_each = toset([
-      "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
-      "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-     ])
-  roles = [aws_iam_role.EC2_DefaultRole.name]
-  policy_arn = each.value
-}
+# resource "aws_iam_policy_attachment" "EC2_Policies" {
+#   name = "EC2_Policies"
+#   for_each = toset([
+#       "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+#       "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+#      ])
+#   roles = [aws_iam_role.EC2_DefaultRole.name]
+#   policy_arn = each.value
+# }
 
 resource "aws_iam_instance_profile" "rm_iam_profile" {
   name = "rm_iam_profile_usecase1"
-  role = aws_iam_role.EC2_DefaultRole.name
+#   role = aws_iam_role.EC2_DefaultRole.name
+   role = "EC2_DefaultRole"
 }
 
 variable "EC2_TYPE" {
@@ -80,7 +81,7 @@ variable "EC2_TYPE" {
 
 variable "S3_PATH" {
   type = string
-  default = " s3://dan-usecase1-binaries/devops/usecase-1/"
+  default = "s3://dan-usecase1-binaries/devops/usecase-1/"
   description = "S3 Path of an deployed image"
 }
 
