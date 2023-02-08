@@ -64,11 +64,10 @@ pipeline {
       when { expression {  params.DESTROY == 'YES' }}
       steps {
         sh """
+              mkdir -p terraform/destroy/ && cd "$_"
+              aws s3 cp ${S3_BUCKET}/${S3_TERRAFORM_PATH} . --recursive
               terraform -v
-	      git clone ${GIT_REPO}	      
-              cd usecases/usecase-1/terraform
               terraform init
-              aws s3 cp ${S3_BUCKET}/${S3_TERRAFORM_PATH}planfile .
               terraform apply -auto-approve planfile
            """
       }
@@ -84,13 +83,12 @@ pipeline {
         sh """
               terraform -v
               cd usecases/usecase-1/terraform
-			  ls -lrt
+	      ls -lrt
               terraform init
               terraform plan -out plan.out
               terraform apply -auto-approve plan.out # Can pass paramters here if needed. Refer here https://stackoverflow.com/questions/63203489/how-can-i-pass-variables-from-jenkins-file-to-terraform
               terraform plan -destroy -out planfile
-              aws s3 cp plan.out ${S3_BUCKET}/${S3_TERRAFORM_PATH}
-              aws s3 cp planfile ${S3_BUCKET}/${S3_TERRAFORM_PATH}
+              aws s3 sync . ${S3_BUCKET}/${S3_TERRAFORM_PATH} --exclude ".*" --exclude "sample/*"
            """
       }
     }

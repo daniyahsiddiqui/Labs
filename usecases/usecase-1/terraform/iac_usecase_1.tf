@@ -41,39 +41,6 @@ variable "AMI" {
   description = "AMI image id for EC2 instance to bake the EC2"
 }
 
-# resource "aws_iam_role" "EC2_DefaultRole" {
-#   name = "EC2_DefaultRole"
-#   assume_role_policy = jsonencode({
-#    Version = "2012-10-17",
-#     Statement = [
-#       {
-#         Action = "sts:AssumeRole",
-#         Effect = "Allow",
-#         Sid = ""
-#         Principal = {
-#           Service = "ec2.amazonaws.com"
-#         }
-#       }
-#     ]
-#   })
-# }
-
-# resource "aws_iam_policy_attachment" "EC2_Policies" {
-#   name = "EC2_Policies"
-#   for_each = toset([
-#       "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
-#       "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-#      ])
-#   roles = [aws_iam_role.EC2_DefaultRole.name]
-#   policy_arn = each.value
-# }
-
-resource "aws_iam_instance_profile" "rm_iam_profile" {
-  name = "rm_iam_profile_usecase1"
-#   role = aws_iam_role.EC2_DefaultRole.name
-   role = "EC2_DefaultRole"
-}
-
 variable "EC2_TYPE" {
   type = string
   default = "t2.micro"
@@ -83,6 +50,44 @@ variable "S3_PATH" {
   type = string
   default = "s3://dan-usecase1-binaries/devops/usecase-1/"
   description = "S3 Path of an deployed image"
+}
+
+variable "APP_PATH" {
+  type = string
+  default = "/root/myproject"
+  description = "Location of flask app installaion"
+}
+
+resource "aws_iam_role" "EC2_DefaultRole" {
+  name = "EC2_DefaultRole"
+  assume_role_policy = jsonencode({
+   Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Sid = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy_attachment" "EC2_Policies" {
+  name = "EC2_Policies"
+  for_each = toset([
+      "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
+      "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+     ])
+  roles = [aws_iam_role.EC2_DefaultRole.name]
+  policy_arn = each.value
+}
+
+resource "aws_iam_instance_profile" "rm_iam_profile" {
+  name = "rm_iam_profile_usecase1"
+  role = aws_iam_role.EC2_DefaultRole.name
 }
 
 resource "aws_security_group" "basic_http" {
@@ -173,15 +178,14 @@ resource "aws_instance" "app_server" {
                   #!/bin/bash
                   echo "Starting user_data"
                   sudo su -
-                  sudo yum -y install pip
-                  mkdir /root/myproject
-                  cd /root/myproject/
+                  yum -y install pip
+                  mkdir "${var.APP_PATH}" && cd "$_"
+                  sleep 2m
                   aws s3 cp "${var.S3_PATH}" . --recursive
-                  ls -lrt
                   cd app/
                   pip install flask
-                  pip install *.whl -t /root/myproject
-                  echo "export FLASK_APP=/root/myproject/usecases/usecase-1/my_application/application.py"  >> /etc/profile
+                  pip install *.whl -t "${var.APP_PATH}" 
+                  echo "export FLASK_APP=${var.APP_PATH}/usecases/usecase-1/my_application/application.py"  >> /etc/profile
                   source /etc/profile
                   nohup flask run --host=0.0.0.0 --port 80 > log.txt 2>&1 &
                   echo "Application started"
