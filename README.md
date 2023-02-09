@@ -1,3 +1,3 @@
 #  Labs
 
-try - 7
+try - 1
