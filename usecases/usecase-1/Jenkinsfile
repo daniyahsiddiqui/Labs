@@ -64,12 +64,10 @@ pipeline {
       when { expression {  params.DESTROY == 'YES' }}
       steps {
         sh """
-              # mkdir -p terraform/destroy/ && cd "$_"
-              # cd usecases/usecase-1/terraform
               aws s3 cp ${S3_BUCKET}/${S3_TERRAFORM_PATH} . --recursive
               terraform -v
               terraform init
-              terraform apply -auto-approve planfile
+              terraform destroy -auto-approve
            """
       }
     }
