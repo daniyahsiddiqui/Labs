@@ -65,8 +65,8 @@ variable "RELEASE_VERSION" {
   description = "Version to be released"
 }
 
-resource "aws_iam_policy" "S3_policy" {
-  name = "S3_policy"
+resource "aws_iam_policy" "S3_policy_blue" {
+  name = "S3_policy_blue"
   path = "/"
   description = "Allow S3 access"
 
@@ -85,8 +85,8 @@ resource "aws_iam_policy" "S3_policy" {
   })
 }
 
-resource "aws_iam_policy" "EC2_policy" {
-  name = "EC2_policy"
+resource "aws_iam_policy" "EC2_policy_blue" {
+  name = "EC2_policy_blue"
   path = "/"
   description = "Allow EC2 access"
 
@@ -117,8 +117,8 @@ resource "aws_iam_policy" "EC2_policy" {
   })
 }
 
-resource "aws_iam_role" "EC2_DefaultRole" {
-  name = "EC2_DefaultRole"
+resource "aws_iam_role" "EC2_DefaultRole_Blue" {
+  name = "EC2_DefaultRole_Blue"
   assume_role_policy = jsonencode({
    Version = "2012-10-17",
     Statement = [
@@ -136,13 +136,13 @@ resource "aws_iam_role" "EC2_DefaultRole" {
 
 resource "aws_iam_policy_attachment" "s3" {
   name = "s3"
-  roles = [aws_iam_role.EC2_DefaultRole.name]
+  roles = [aws_iam_role.EC2_DefaultRole_Blue.name]
   policy_arn = aws_iam_policy.S3_policy.arn
 }
 
 resource "aws_iam_policy_attachment" "ec2" {
   name = "ec2"
-  roles = [aws_iam_role.EC2_DefaultRole.name]
+  roles = [aws_iam_role.EC2_DefaultRole_Blue.name]
   policy_arn = aws_iam_policy.EC2_policy.arn
 }
 
