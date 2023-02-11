@@ -107,6 +107,7 @@ resource "aws_security_group" "basic_http" {
       security_groups = []
       ipv6_cidr_blocks = []
       prefix_list_ids = []
+      self = true
     }
   ]
 
@@ -122,6 +123,7 @@ resource "aws_security_group" "basic_http" {
         "::/0"]
       security_groups = []
       prefix_list_ids = []
+      self = true
     }
   ]
 }
@@ -143,6 +145,7 @@ resource "aws_security_group" "basic_ssh" {
       security_groups = []
       ipv6_cidr_blocks = []
       prefix_list_ids = []
+      self = true
     }
   ]
 
@@ -158,6 +161,7 @@ resource "aws_security_group" "basic_ssh" {
         "::/0"]
       security_groups = []
       prefix_list_ids = []
+      self = true
     }
   ]
 
