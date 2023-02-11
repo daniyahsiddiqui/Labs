@@ -65,8 +65,8 @@ variable "RELEASE_VERSION" {
   description = "Version to be released"
 }
 
-resource "aws_iam_policy" "S3_policy" {
-  name = "S3_policy"
+resource "aws_iam_policy" "S3_policy_green" {
+  name = "S3_policy_green"
   path = "/"
   description = "Allow S3 access"
 
@@ -85,8 +85,8 @@ resource "aws_iam_policy" "S3_policy" {
   })
 }
 
-resource "aws_iam_policy" "EC2_policy" {
-  name = "EC2_policy"
+resource "aws_iam_policy" "EC2_policy_green" {
+  name = "EC2_policy_green"
   path = "/"
   description = "Allow EC2 access"
 
@@ -117,8 +117,8 @@ resource "aws_iam_policy" "EC2_policy" {
   })
 }
 
-resource "aws_iam_role" "EC2_DefaultRole" {
-  name = "EC2_DefaultRole"
+resource "aws_iam_role" "EC2_DefaultRole_Green" {
+  name = "EC2_DefaultRole_Green"
   assume_role_policy = jsonencode({
    Version = "2012-10-17",
     Statement = [
@@ -136,19 +136,19 @@ resource "aws_iam_role" "EC2_DefaultRole" {
 
 resource "aws_iam_policy_attachment" "s3" {
   name = "s3"
-  roles = [aws_iam_role.EC2_DefaultRole.name]
+  roles = [aws_iam_role.EC2_DefaultRole_Green.name]
   policy_arn = aws_iam_policy.S3_policy.arn
 }
 
 resource "aws_iam_policy_attachment" "ec2" {
   name = "ec2"
-  roles = [aws_iam_role.EC2_DefaultRole.name]
+  roles = [aws_iam_role.EC2_DefaultRole_Green.name]
   policy_arn = aws_iam_policy.EC2_policy.arn
 }
 
-resource "aws_iam_instance_profile" "rm_iam_profile" {
-  name = "rm_iam_profile_blue"
-  role = aws_iam_role.EC2_DefaultRole.name
+resource "aws_iam_instance_profile" "rm_iam_profile_green" {
+  name = "rm_iam_profile_green"
+  role = aws_iam_role.EC2_DefaultRole_Green.name
 }
 
 resource "aws_security_group" "basic_http" {
@@ -240,7 +240,7 @@ resource "aws_instance" "app_server_usecase2_green" {
   key_name  = var.KEYNAME
   instance_type = var.EC2_TYPE
   subnet_id = var.SUBNET
-  iam_instance_profile = aws_iam_instance_profile.rm_iam_profile.name  
+  iam_instance_profile = aws_iam_instance_profile.rm_iam_profile_green.name  
   associate_public_ip_address = true
   vpc_security_group_ids = [
 	aws_security_group.basic_http.id,
