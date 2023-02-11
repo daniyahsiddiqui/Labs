@@ -14,7 +14,7 @@ provider "aws" {
 
 variable "VPC" {
   type = string
-  default = "vpc-ef705e95"
+  default = "vpc-07f7183299bc753ba"
   description = "VPC in which we need to create resources"
 }
 
@@ -26,25 +26,20 @@ variable "CIDR" {
 
 variable "SUBNET" {
   type = string
-  default = "subnet-8c41e3c1"
+  default = "subnet-06e17f4d97f0e34f3"
   description = "Public subnet for deploying the application"
 }
 
 variable "KEYNAME" {
   type = string
-  default = "RisingMinerva-EAST-KeyPair"
+  default = "myPrivateKey"
   description = "Key name for the EC2"
 }
 
 variable "AMI" {
   type = string
-  default = "ami-00dc79254d0461090"
+  default = "ami-0b0dcb5067f052a63" 
   description = "AMI image id for EC2 instance to bake the EC2"
-}
-
-resource "aws_iam_instance_profile" "rm_iam_profile" {
-  name = "rm_iam_profile_green"
-  role = "EC2_DefaultRole"
 }
 
 variable "EC2_TYPE" {
@@ -58,22 +53,111 @@ variable "S3_PATH" {
   description = "S3 Path of an deployed image"
 }
 
+variable "APP_PATH" {
+    type = string
+    default = "/root/myproject"
+    description = "Install location on the server"
+}
+
 variable "RELEASE_VERSION" {
   type = string
   default = "1.0.0"
   description = "Version to be released"
 }
 
-variable "INSTALL_FOLDER" {
-    type = string
-    default = "/root/myproject"
-    description = "Install location on the server"
+resource "aws_iam_policy" "S3_policy" {
+  name = "S3_policy"
+  path = "/"
+  description = "Allow S3 access"
+
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:*",
+                "s3-object-lambda:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "EC2_policy" {
+  name = "EC2_policy"
+  path = "/"
+  description = "Allow EC2 access"
+
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "ec2:*",
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "iam:CreateServiceLinkedRole",
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "iam:AWSServiceName": [
+                        "ec2scheduled.amazonaws.com",
+                        "spot.amazonaws.com",
+                        "spotfleet.amazonaws.com",
+                        "transitgateway.amazonaws.com"
+                    ]
+                }
+            }
+        }
+    ]
+  })
+}
+
+resource "aws_iam_role" "EC2_DefaultRole" {
+  name = "EC2_DefaultRole"
+  assume_role_policy = jsonencode({
+   Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Sid = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy_attachment" "s3" {
+  name = "s3"
+  roles = [aws_iam_role.EC2_DefaultRole.name]
+  policy_arn = aws_iam_policy.S3_policy.arn
+}
+
+resource "aws_iam_policy_attachment" "ec2" {
+  name = "ec2"
+  roles = [aws_iam_role.EC2_DefaultRole.name]
+  policy_arn = aws_iam_policy.EC2_policy.arn
+}
+
+resource "aws_iam_instance_profile" "rm_iam_profile" {
+  name = "rm_iam_profile_blue"
+  role = aws_iam_role.EC2_DefaultRole.name
 }
 
 resource "aws_security_group" "basic_http" {
   name = "sg_flask-usecase2-green"
   description = "Web Security Group for HTTP"
   vpc_id =  var.VPC
+  lifecycle {
+      create_before_destroy = true
+  }
   ingress = [
     {
       description = "Allow HTTP Traffic access"
@@ -105,7 +189,7 @@ resource "aws_security_group" "basic_http" {
   ]
 
   tags = {
-    Name = "rm-application"
+    Name = "rm-application-usecase2"
   }
 }
 
@@ -113,9 +197,12 @@ resource "aws_security_group" "basic_ssh" {
   name = "sg_ssh-rm-usecase2-green"
   description = "Web Security Group for SSH"
   vpc_id =  var.VPC
+  lifecycle {
+      create_before_destroy = true
+  }
   ingress = [
     {
-      description = "Allow HTTP Traffic access"
+      description = "Allow SSH Traffic access"
       from_port = 22
       to_port = 22
       protocol = "tcp"
@@ -144,7 +231,7 @@ resource "aws_security_group" "basic_ssh" {
   ]
 
   tags = {
-    Name = "rm-application"
+    Name = "rm-application-usecase2"
   }
 }
 
@@ -162,13 +249,13 @@ resource "aws_instance" "app_server_usecase2_green" {
                   #!/bin/bash
                   echo "Starting user_data"
                   sudo su -
-                  sudo yum -y install pip
-                  mkdir -p "${var.INSTALL_FOLDER}/${var.RELEASE_VERSION}"
-                  cd "${var.INSTALL_FOLDER}/${var.RELEASE_VERSION}"
+                  yum -y install pip
+                  mkdir -p "${var.APP_PATH}/${var.RELEASE_VERSION}" && cd "$_"
+                  sleep 2m
                   aws s3 cp "${var.S3_PATH}/${var.RELEASE_VERSION}/" . --recursive
                   pip install flask
-                  pip install *.whl -t ${var.INSTALL_FOLDER}/${var.RELEASE_VERSION}
-                  echo "export FLASK_APP=${var.INSTALL_FOLDER}/${var.RELEASE_VERSION}/usecases/usecase-2/my_application/application.py"  >> /etc/profile
+                  pip install *.whl -t ${var.APP_PATH}/${var.RELEASE_VERSION}
+                  echo "export FLASK_APP=${var.APP_PATH}/${var.RELEASE_VERSION}/usecases/usecase-2/my_application/application.py"  >> /etc/profile
                   source /etc/profile
                   nohup flask run --host=0.0.0.0 --port 80 > log.txt 2>&1 &
                   echo "Application started"
