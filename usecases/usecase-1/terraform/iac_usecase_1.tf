@@ -94,7 +94,7 @@ resource "aws_security_group" "basic_http" {
   name = "sg_usecase1_http"
   description = "Web Security Group for HTTP"
   vpc_id =  var.VPC
-  life_cycle {
+  lifecycle {
       create_before_destroy = true
   }
   ingress = [
@@ -130,7 +130,7 @@ resource "aws_security_group" "basic_ssh" {
   name = "sg_usecase1_ssh"
   description = "Web Security Group for SSH access"
   vpc_id =  var.VPC
-  life_cycle {
+  lifecycle {
       create_before_destroy = true
   }
   ingress = [
