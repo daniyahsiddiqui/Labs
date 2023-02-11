@@ -91,9 +91,12 @@ resource "aws_iam_instance_profile" "rm_iam_profile" {
 }
 
 resource "aws_security_group" "basic_http" {
-  name = "sg_flask-rm"
+  name = "sg_usecase1_http"
   description = "Web Security Group for HTTP"
   vpc_id =  var.VPC
+  life_cycle {
+      create_before_destroy = true
+  }
   ingress = [
     {
       description = "Allow HTTP Traffic access"
@@ -104,7 +107,6 @@ resource "aws_security_group" "basic_http" {
       security_groups = []
       ipv6_cidr_blocks = []
       prefix_list_ids = []
-      self = true
     }
   ]
 
@@ -120,18 +122,20 @@ resource "aws_security_group" "basic_http" {
         "::/0"]
       security_groups = []
       prefix_list_ids = []
-      self = true
     }
   ]
 }
 
 resource "aws_security_group" "basic_ssh" {
-  name = "sg_ssh-rm-usecase-1"
-  description = "Web Security Group for HTTP"
+  name = "sg_usecase1_ssh"
+  description = "Web Security Group for SSH access"
   vpc_id =  var.VPC
+  life_cycle {
+      create_before_destroy = true
+  }
   ingress = [
     {
-      description = "Allow HTTP Traffic access"
+      description = "Allow SSH Traffic access"
       from_port = 22
       to_port = 22
       protocol = "tcp"
@@ -139,7 +143,6 @@ resource "aws_security_group" "basic_ssh" {
       security_groups = []
       ipv6_cidr_blocks = []
       prefix_list_ids = []
-      self = true
     }
   ]
 
@@ -155,7 +158,6 @@ resource "aws_security_group" "basic_ssh" {
         "::/0"]
       security_groups = []
       prefix_list_ids = []
-      self = true
     }
   ]
 
