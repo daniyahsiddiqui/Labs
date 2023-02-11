@@ -58,6 +58,59 @@ variable "APP_PATH" {
   description = "Location of flask app installaion"
 }
 
+
+resource "aws_iam_policy" "S3_policy" {
+  name = "S3_policy"
+  path = "/"
+  description = "Allow S3 access"
+
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:*",
+                "s3-object-lambda:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "EC2_policy" {
+  name = "EC2_policy"
+  path = "/"
+  description = "Allow EC2 access"
+
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "ec2:*",
+            "Effect": "Allow",
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "iam:CreateServiceLinkedRole",
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "iam:AWSServiceName": [
+                        "ec2scheduled.amazonaws.com",
+                        "spot.amazonaws.com",
+                        "spotfleet.amazonaws.com",
+                        "transitgateway.amazonaws.com"
+                    ]
+                }
+            }
+        }
+    ]
+  })
+}
+
 resource "aws_iam_role" "EC2_DefaultRole" {
   name = "EC2_DefaultRole"
   assume_role_policy = jsonencode({
@@ -75,14 +128,26 @@ resource "aws_iam_role" "EC2_DefaultRole" {
   })
 }
 
-resource "aws_iam_policy_attachment" "EC2_Policies" {
-  name = "EC2_Policies"
-  for_each = toset([
-      "arn:aws:iam::aws:policy/AmazonEC2FullAccess",
-      "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-     ])
+# resource "aws_iam_policy_attachment" "EC2_Policies" {
+#   name = "EC2_Policies"
+#   for_each = toset([
+#      aws_iam_policy.S3_policy.arn,
+#      aws_iam_policy.EC2_policy.arn,
+#     ])
+#  roles = [aws_iam_role.EC2_DefaultRole.name]
+#  policy_arn = each.value
+#}
+
+resource "aws_iam_policy_attachment" "s3" {
+  name = "s3"
   roles = [aws_iam_role.EC2_DefaultRole.name]
-  policy_arn = each.value
+  policy_arn = aws_iam_policy.S3_policy.arn
+}
+
+resource "aws_iam_policy_attachment" "ec2" {
+  name = "ec2"
+  roles = [aws_iam_role.EC2_DefaultRole.name]
+  policy_arn = aws_iam_policy.EC2_policy.arn
 }
 
 resource "aws_iam_instance_profile" "rm_iam_profile" {
