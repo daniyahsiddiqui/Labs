@@ -240,7 +240,7 @@ resource "aws_instance" "app_server_usecase2_blue" {
   key_name  = var.KEYNAME
   instance_type = var.EC2_TYPE
   subnet_id = var.SUBNET
-  iam_instance_profile = aws_iam_instance_profile.rm_iam_profile.name  
+  iam_instance_profile = aws_iam_instance_profile.rm_iam_profile_blue.name  
   associate_public_ip_address = true
   vpc_security_group_ids = [
 	aws_security_group.basic_http.id,
