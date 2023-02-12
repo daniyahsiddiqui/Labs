@@ -12,6 +12,7 @@ Step 1. Resource creation
  3. S3 bucket as binary repository
     1. S3 bucket must be created before running Jenkins pipeline.
     	- Check Jenkinsfile in usecase-1 and make sure you have created the folders defined in it [Line# 1-5].
+ 	- Make sure you change the bucket name and git repo defs with your own [Line# 1-5]
  
  4. Create role for EC2 (Application Role)
     1. IAM role for the EC2 on which application is deployed 'EC2_DefaultRole'
@@ -48,12 +49,12 @@ Step 4. Changes to Application files
         - [line#- 28]: - Public subnet id.
         - [line#- 40]: - AMI Name for creating ec2 on which application will be deployed. Please choose the latest AMI that will have latest aws tools installed.
                          AMI should be available in the region provided in 'provider.tf'
-        - [line#- 46]: - IAM application role which must be attached to the Ec2 on which application is deployed. Created in "Step 1. Resource creation".
-        - [line#- 56]: - S3 path to download binary package.
+        - [line#- 74]: - IAM application role which must be attached to the Ec2 on which application is deployed. Created in "Step 1. Resource creation".
+        - [line#- 84]: - S3 path to download binary package.
      3. Jenkinsfile - All S3 paths should be Unique globally, so use your name, or some other string to make it unique. 
         - [line#- 2]: - S3 Bucket (S3_BUCKET).
         - [line#- 3]: - S3 path to upload the binary package (S3_BINARY_PATH). 
-          - **SHOULD BE EXACTLY SAME AS LINE 52 OF iac_usecase_1.tf**
+          - **SHOULD BE EXACTLY SAME AS LINE 84 OF iac_usecase_1.tf**
         - [line#- 4]: - S3 path for Terraform create destroy plan (S3_TERRAFORM_PATH).
 ---------------------------------------
 

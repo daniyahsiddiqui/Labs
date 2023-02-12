@@ -12,6 +12,11 @@ pipeline {
       choices: ['BLUE', 'GREEN'],
       description: 'SELECT the production cluster to deploy'
     )
+    choice(
+        name: 'DESTROY',
+        choices: ['NO', 'YES'],
+        description: 'SELECT to destroy'
+      )
      string(
      name: 'VERSION',
      defaultValue: '1.0.0',
@@ -21,6 +26,7 @@ pipeline {
   stages {
   // build stage
     stage('build') {
+      when { expression {  params.DESTROY == 'NO' }}
       steps {
         sh 'virtualenv .venv' // Creating the python virtual environment
         // Running python setup tool to create wheel distribution file
@@ -34,6 +40,7 @@ pipeline {
     }
   // test stage
     stage('test') {
+      when { expression {  params.DESTROY == 'NO' }}
       steps {
         // Running the test suits present in code
         sh """
@@ -51,6 +58,7 @@ pipeline {
     // Stage to upload binary to s3
     // Deactivating python virtual environment
     stage('uploadBinaryToS3') {
+      when { expression {  params.DESTROY == 'NO' }}
       steps {
         sh """
               source .venv/bin/activate
@@ -60,12 +68,35 @@ pipeline {
            """
       }
     }
+
+    // Destroy Stage for both blue and green
+    stage('Destroy') {
+      when { expression {  (params.Deploy_ENV == 'GREEN') && (params.DESTROY == 'YES') }}
+      steps {
+        sh """
+              aws s3 cp ${S3_BUCKET}/${S3_TERRAFORM_PATH}/green/${params.VERSION}/ . --recursive
+              terraform -v
+              terraform init
+              terraform destroy -auto-approve
+           """
+      }
+      when { expression {  (params.Deploy_ENV == 'BLUE') && (params.DESTROY == 'YES') }}
+      steps {
+        sh """
+              aws s3 cp ${S3_BUCKET}/${S3_TERRAFORM_PATH}/blue/${params.VERSION}/ . --recursive
+              terraform -v
+              terraform init
+              terraform destroy -auto-approve
+           """
+      }
+    }
+
     //Deploy Blue stage
     stage('deploy-blue') {
        // Running terraform scripts and uploading plan file to s3
       // Destroying stack : terraform apply -auto-approve -out planfile
       // view binary files : terraform show -json <FILENAME>
-      when { expression {  params.Deploy_ENV  == 'BLUE' }}
+      when { expression {  (params.Deploy_ENV  == 'BLUE') && (params.DESTROY=='NO') }}
       steps {
         sh """
               terraform -v
@@ -74,15 +105,14 @@ pipeline {
               terraform plan -out plan.out -var="RELEASE_VERSION=${params.VERSION}"
               terraform apply -auto-approve plan.out
               terraform plan -destroy -out planfile -var="RELEASE_VERSION=${params.VERSION}"
-              aws s3 cp plan.out ${S3_BUCKET}/${S3_TERRAFORM_PATH}/blue/${params.VERSION}/
-              aws s3 cp planfile ${S3_BUCKET}/${S3_TERRAFORM_PATH}/blue/${params.VERSION}/
+              aws s3 sync . ${S3_BUCKET}/${S3_TERRAFORM_PATH}/blue/${params.VERSION}/ --exclude ".*" --exclude "sample/*"
            """
       }
     } // End stage
     //Deploy Green stage
     stage('deploy-green') {
        // Running terraform scripts and uploading plan file to s3
-      when { expression {  params.Deploy_ENV == 'GREEN' }}
+      when { expression {  (params.Deploy_ENV == 'GREEN') && (params.DESTROY=='NO')  }}
       steps {
         sh """
               terraform -v
@@ -91,8 +121,7 @@ pipeline {
               terraform plan -out plan.out -var="RELEASE_VERSION=${params.VERSION}"
               terraform apply -auto-approve plan.out
               terraform plan -destroy -out planfile -var="RELEASE_VERSION=${params.VERSION}"
-              aws s3 cp plan.out ${S3_BUCKET}/${S3_TERRAFORM_PATH}/green/${params.VERSION}/
-              aws s3 cp planfile ${S3_BUCKET}/${S3_TERRAFORM_PATH}/green/${params.VERSION}/
+              aws s3 sync . ${S3_BUCKET}/${S3_TERRAFORM_PATH}/green/${params.VERSION}/ --exclude ".*" --exclude "sample/*"
            """
       }
     }

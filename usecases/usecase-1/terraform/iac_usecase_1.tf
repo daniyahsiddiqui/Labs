@@ -17,6 +17,7 @@ variable "VPC" {
   default = "vpc-07f7183299bc753ba"
   description = "VPC in which we need to create resources"
 }
+
 variable "CIDR" {
   type    = list(string)
   default = ["0.0.0.0/0"]
@@ -191,6 +192,10 @@ resource "aws_security_group" "basic_http" {
       self = true
     }
   ]
+
+  tags = {
+    Name = "rm-application-usecase1"
+  }
 }
 
 resource "aws_security_group" "basic_ssh" {
@@ -231,7 +236,7 @@ resource "aws_security_group" "basic_ssh" {
   ]
 
   tags = {
-    Name = "rm-application"
+    Name = "rm-application-usecase1"
   }
 }
 
@@ -263,6 +268,6 @@ resource "aws_instance" "app_server" {
                   echo "End user_data"
                 EOF
   tags = {
-    Name = "rm-application"
+    Name = "rm-application-usecase1"
   }
 }
