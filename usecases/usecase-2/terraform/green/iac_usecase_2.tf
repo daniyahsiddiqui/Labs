@@ -134,16 +134,16 @@ resource "aws_iam_role" "EC2_DefaultRole_Green" {
   })
 }
 
-resource "aws_iam_policy_attachment" "s3" {
-  name = "s3"
+resource "aws_iam_policy_attachment" "S3_policy_green" {
+  name = "S3_policy_green"
   roles = [aws_iam_role.EC2_DefaultRole_Green.name]
-  policy_arn = aws_iam_policy.S3_policy.arn
+  policy_arn = aws_iam_policy.S3_policy_green.arn
 }
 
-resource "aws_iam_policy_attachment" "ec2" {
-  name = "ec2"
+resource "aws_iam_policy_attachment" "EC2_policy_green" {
+  name = "EC2_policy_green"
   roles = [aws_iam_role.EC2_DefaultRole_Green.name]
-  policy_arn = aws_iam_policy.EC2_policy.arn
+  policy_arn = aws_iam_policy.EC2_policy_green.arn
 }
 
 resource "aws_iam_instance_profile" "rm_iam_profile_green" {
