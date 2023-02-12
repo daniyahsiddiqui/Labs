@@ -146,7 +146,7 @@ resource "aws_iam_policy_attachment" "EC2_policy_blue" {
   policy_arn = aws_iam_policy.EC2_policy_blue.arn
 }
 
-resource "aws_iam_instance_profile" "rm_iam_profile" {
+resource "aws_iam_instance_profile" "rm_iam_profile_blue" {
   name = "rm_iam_profile_blue"
   role = aws_iam_role.EC2_DefaultRole_Blue.name
 }
