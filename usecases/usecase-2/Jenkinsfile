@@ -70,7 +70,7 @@ pipeline {
     }
 
     // Destroy Stage for both blue and green
-    stage('Destroy') {
+    stage('Destroy-green') {
       when { expression {  (params.Deploy_ENV == 'GREEN') && (params.DESTROY == 'YES') }}
       steps {
         sh """
@@ -80,6 +80,8 @@ pipeline {
               terraform destroy -auto-approve
            """
       }
+    }
+    stage('Destroy-blue') {
       when { expression {  (params.Deploy_ENV == 'BLUE') && (params.DESTROY == 'YES') }}
       steps {
         sh """
