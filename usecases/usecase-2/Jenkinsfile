@@ -13,15 +13,15 @@ pipeline {
       description: 'SELECT the production cluster to deploy'
     )
     choice(
-        name: 'DESTROY',
-        choices: ['NO', 'YES'],
-        description: 'SELECT to destroy'
-      )
-     string(
+      name: 'DESTROY',
+      choices: ['NO', 'YES'],
+      description: 'SELECT to destroy'
+    )
+    string(
      name: 'VERSION',
      defaultValue: '1.0.0',
      description: 'Version to deploy on production cluster'
-     )
+    )
   }
   stages {
   // build stage
