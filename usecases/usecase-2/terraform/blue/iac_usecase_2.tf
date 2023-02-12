@@ -148,7 +148,7 @@ resource "aws_iam_policy_attachment" "EC2_policy_blue" {
 
 resource "aws_iam_instance_profile" "rm_iam_profile" {
   name = "rm_iam_profile_blue"
-  role = aws_iam_role.EC2_DefaultRole.name
+  role = aws_iam_role.EC2_DefaultRole_Blue.name
 }
 
 resource "aws_security_group" "basic_http" {
